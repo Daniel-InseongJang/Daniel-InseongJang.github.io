@@ -1,6 +1,6 @@
 ---
 title: "[JAVA] Singleton"
-tags: JAVA
+tags: JAVA DesignPattern CreationalPattern
 article_header:
   type: cover
   image:
@@ -36,10 +36,10 @@ public class LazyInitialized {
 }
 ```
 이 코드의 문제가 하나있다.
-우리가 application을 만들때 멀티스레드를 사용하게 된다.
-그럴경우 이코드는 안전하지않다.
-왜냐하면 if의 intance가 null 인지 체크하고 null일경우 새로운 인스턴스를 만드는데 만들기전 다른스레드에서 접근해서
-새로운 인스턴스를 만들어 버릴수있다. 이러면 하나의 인스턴스만 제공해야하는 싱글턴이 깨지게 된다.
+우리가 application을 만들때 멀티스레드를 사용하게 된다.<br>
+그럴경우 이코드는 안전하지않다. 왜냐하면 if의 intance가 null 인지 체크하고 null일경우 <br>
+새로운 인스턴스를 만드는데 만들기전 다른스레드에서 접근해서 새로운 인스턴스를 만들어 버릴수있다.<br> 
+이러면 하나의 인스턴스만 제공해야하는 싱글턴이 깨지게 된다. 그리고 private 생성자는 상속이 불가능하다.
 
 ## Multi-Thread 에서 안전한 방법 
 ### 1.synchronized 사용하기
@@ -122,6 +122,19 @@ Bill Pugh 가 제안한 방벙이다. 이렇게 하면 멀티스레드에도 안
 getInstance() 호출될때 SettingsHolder 클래스가 로딩이 되고
 그때 INSTANCE를 만들므로 Lazy loading도 가능한 코드가 된다.
 
+### 5.Enum 사용 (권장!)
+```java
+public enum EnumSingleton {
+
+    INSTANCE;
+    
+    public static void do(){
+    }
+}
+```
+Reflection을 해결하기 위한 방법 으로 Joshua Bloch는 Singleton 디자인 패턴을 구현하기 위해 Enum을 사용할 것을 제안했다. Java 프로그램에서 모든 enum 값이 한 번만 인스턴스화 되도록 보장한다. 그리고 직렬화&역직렬화에 안전한방법이다. 왜냐하면 기본적으로 Serializable를 구현하고 있다.  단점은 enum은 다소 융통성이 없다는 것입니다. 예를 들어 지연 초기화(lazy initialization)를 허용하지 않는다.
+
+
 ## 싱글턴 깨기!
 
 1. 리플렉션 사용하기
@@ -131,3 +144,10 @@ getInstance() 호출될때 SettingsHolder 클래스가 로딩이 되고
 2. 직렬화 & 역직렬화 사용하기
 - 역직렬화를 할때는 무조건 생성자를 생성해서 인스턴스를 만들어야 하므로 새로운 인스턴스가 된다.
 - 대응방법은 readResolve라는 메소드를 정의하면 이걸 사용하게 된다.
+
+
+
+**참고**
+
+[Journaldev](https://www.journaldev.com/1377/java-singleton-design-pattern-best-practices-examples)<br>
+[코딩으로 학습하는 GoF의 디자인 패턴](https://www.inflearn.com/course/%EB%94%94%EC%9E%90%EC%9D%B8-%ED%8C%A8%ED%84%B4)
